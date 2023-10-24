@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>company List</title>
+</head>
+<body>
+<h1>company List</h1>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="comp : ${company}">
+        <td th:text="${comp.id}"></td>
+        <td th:text="${comp.name}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

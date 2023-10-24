@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Product</title>
+</head>
+<body>
+<h1>Edit Product</h1>
+<form th:action="@{/products/__${product.id}__/edit}" method="post" th:object="${product}">
+    <label>Name: <input type="text" th:field="*{name}" /></label><br/>
+    <label>Price: <input type="text" th:field="*{price}" /></label><br/>
+    <!-- 기타 필요한 수정 폼 항목 추가 -->
+    <input type="submit" value="Update"/>
+</form>
+<a th:href="@{/products}">Back to Products</a>
+</body>
+</html>

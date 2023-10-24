@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product List</title>
+</head>
+<body>
+<h1>Product List</h1>
+
+<!--<button type="button" th:onclick="'javascript:window.location.href='/products/add''">추가</button>-->
+<!--<button type="button" th:onclick="'javascript:window.location.href=' + @{/joinUs.jsp}">추가</button>-->
+
+<button th:onclick="'location.href=\''+ @{/products/add} + '\''">추가</button>
+
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th colspan="3">기타</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- 상품 목록을 동적으로 출력 -->
+    <tr th:each="product : ${products}">
+        <td th:text="${product.id}"></td>
+        <td th:text="${product.name}"></td>
+        <td th:text="${product.price}"></td>
+        <!--<td><a th:href="@{/products/{id}/edit(id=${product.id})}">수정</a></td>-->
+        <!--<td><a th:href="@{/products/__${product.id}__/edit}">수정</a></td>-->
+        <td><button type="button" th:onclick="'javascript:editProduct(' + ${product.id} + ')'" >수정</button></td>
+
+        <td><button type="button" th:onclick="delete([[${product.id}]])">삭제</button></td>
+        <td><button type="button" th:onclick="order([[${product.id}]])">구매</button></td>
+    </tr>
+    </tbody>
+</table>
+
+<script>
+    function editProduct(productId) {
+        var redirectUrl = '/products/' + productId + '/edit';
+        window.location.href = redirectUrl;
+    }
+</script>
+
+</body>
+</html>
