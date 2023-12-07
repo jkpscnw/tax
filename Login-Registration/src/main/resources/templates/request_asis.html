@@ -1,0 +1,540 @@
+<html class="win chrome chrome119 webkit webkit537 chrome1 webkit5">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script src="/resources/fsec/assets/vendors/jquery/jquery-1.10.2.min.js"></script>
+    <script src="/resources/fsec/js/anF1ZXJ5LTEuMTEuMi5taW4yMDE3MDIwMTEwMjMxOTE0MA==.js"></script>
+    <link href="/resources/fsec/assets/vendors/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/resources/fsec/assets/vendors/swiper/css/swiper.min.css" rel="stylesheet">
+    <link href="/resources/fsec/assets/vendors/bootstrap-datepicker/css/datepicker.css" rel="stylesheet">
+    <link href="/resources/fsec/assets/vendors/rateit/css/rateit.css" rel="stylesheet">
+    <link href="/resources/fsec/assets/css/common.css" rel="stylesheet">
+    <link href="/resources/fsec/assets/css/sub.css" rel="stylesheet">
+    <!-- 상용 JS(가맹점 MID 변경 시 주석 해제, 테스트용 JS 주석 처리 필수!) -->
+    <script language="javascript" type="text/javascript" src="https://stdpay.inicis.com/stdjs/INIStdPay.js"
+            charset="UTF-8"></script>
+
+    <!-- 테스트 JS(샘플에 제공된 테스트 MID 전용) -->
+    <!-- <script language="javascript" type="text/javascript" src="https://stgstdpay.inicis.com/stdjs/INIStdPay.js" charset="UTF-8"></script> -->
+
+    <script type="text/javascript" src="https://stdux.inicis.com/stdpay/stdjs/INIStdPay_third-party.js"></script>
+    <link href="https://stdpay.inicis.com/./stdcss/INIStdPay.css" type="text/css" rel="stylesheet">
+</head>
+
+<body bgcolor="#FFFFFF" text="#242424" leftmargin="0" topmargin="15" marginwidth="0" marginheight="0" bottommargin="0"
+      rightmargin="0" style="">
+<table>
+    <tbody>
+    <tr>
+        <td style="text-align:left;">
+
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    document.cookie = 'cross-site-cookie=bar; SameSite=None; Secure';
+
+    //기능키 버튼 방지
+    $(document).ready(function(){
+        $(document).bind('keydown',function(e){
+            if ( e.keyCode == 93 ) { // 기능키
+                //alert("기능키 사용할 수 없습니다.");
+                fn_openMsgModal({ title : '알림', msg : "기능키 사용할 수 없습니다."});
+                e.preventDefault();
+                e.returnValue = false;
+            }
+        });
+    });
+
+    //F12 기능키 버튼 방지
+    $(document).ready(function(){
+        $(document).bind('keydown',function(e){
+            if ( e.keyCode == 123 ) { // F12
+                //alert("F12키 사용할 수 없습니다.");
+                fn_openMsgModal({ title : '알림', msg : "F12키 사용할 수 없습니다."});
+                e.preventDefault();
+                e.returnValue = false;
+            }
+        });
+    });
+
+    // 우측 클릭 방지
+    document.onmousedown=disableclick;
+    function disableclick(event){
+        if (event.button==2) {
+            //alert("마우스 우클릭 사용할 수 없습니다.");
+            fn_openMsgModal({ title : '알림', msg : "마우스 우클릭 사용할 수 없습니다."});
+            return false;
+        }
+    }
+
+    function noEvent() { // 새로 고침 방지
+        if (event.keyCode == 116) {
+            //alert("새로고침을 할 수 없습니다.");
+            fn_openMsgModal({ title : '알림', msg : "새로고침을 할 수 없습니다."});
+            event.keyCode = 2;
+            return false;
+        } else if (event.ctrlKey
+                && (event.keyCode == 78 || event.keyCode == 82)) {
+            return false;
+        }
+    }
+    document.onkeydown = noEvent;
+
+    window.onload=function(){
+        //function submit() {
+        var form = document.createElement("form");
+        form.setAttribute("id", "SendPayForm_id");
+        form.setAttribute("charset", "UTF-8");
+        form.setAttribute("method", "Post");  //Post 방식
+        form.setAttribute("action", "Javascript:INIStdPay.pay('SendPayForm_id')"); //요청 보낼 주소
+
+        var fi = "version|||1.0||||mid|||fsecorkr00||||goodname|||세대별로 알아보는 온라인 커뮤니티 이용 행태||||oid|||FSI1699852506939||||price|||100000||||currency|||WON||||buyername|||박정관||||buyertel|||010-9981-9798||||buyeremail|||jkpark||||timestamp|||1699852506939||||signature|||90abf7dc384e704fb6486075307786e626702747832b8ab34bb2cf819ec40047||||returnUrl|||https://www.findatamall.or.kr/fsec/epay/INIStdPayReturn.do?cmnx=44||||mKey|||d027dca01b4904d791b721a4a9a6e14aff071baeb768a25070d6eedf462d13c6||||gopaymethod|||Card:DirectBank||||acceptmethod|||CARDPOINT:HPP(2):va_receipt:below1000:SKIN():KWPY_TYPE(0):KWPY_VAT(0)||||languageView||| ||||charset|||UTF-8||||payViewType||| ||||closeUrl|||https://www.findatamall.or.kr/fsec/epay/close.do?cmnx=44||||popupUrl|||https://www.findatamall.or.kr/fsec/epay/popup.do?cmnx=44||||quotabase|||2:3:4:5:6:11:12:24:36||||ini_onlycardcode||| ||||ini_cardcode||| ||||ansim_quota||| ||||INIregno||| ||||merchantData|||epayGoodsId:4873fb0d-7702-11ee-bf4b-f220ef21bb88||epayRtnUrl:/fsec/dataProd/buyProdDone.do?cmnx=44||epayPriceType:2||epayPurchaseId:null||epayUseInfoIdx:16730||epayOwnerId:19443||ssMemberIdx:231100048||ss_usr_memberId:jkpark||provideWay:null||buyerCompIdx:null||subscribeIdx:null||subscribeCnt:null";
+        var Split1 = fi.split('||||');
+        for(var i in Split1){
+
+            var Split2 = Split1[i].split('|||');
+            var hiddenField = document.createElement("input");
+            var name = Split2[0];
+            var value = Split2[1];
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", name);
+            hiddenField.setAttribute("value", value + (name == 'gopaymethod' ? ':VBank' : ''));
+            form.appendChild(hiddenField);
+        }
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+
+
+<style>
+    #_comMsgPopModal_ .modal-footer, #_comConfMsgPopModal_ .modal-footer {border-top:none;}
+
+    #_comMsgPopModal_ .modal-content, #_comConfMsgPopModal_ .modal-content {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      pointer-events: auto;
+      background-color: #fff;
+      background-clip: padding-box;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      border-radius: 20px;
+      padding: 0px 0 55px;
+      outline: 0;
+    }
+
+    #_comMsgPopModal_ .modal-header, #_comConfMsgPopModal_ .modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 1rem 1rem 0 1rem;
+      border-top-left-radius: calc(0.3rem - 1px);
+      border-top-right-radius: calc(0.3rem - 1px);
+    }
+
+    #_comMsgPopModal_ .modal-header .close, #_comConfMsgPopModal_ .modal-header .close {
+      padding: 1rem 1rem;
+      margin: 0 0 0 auto;
+      ouline: 0;
+      content: ''; display: block; position: inherit; text-align:right; width: 100%; height: 100%; background: url("/resources/fsec/static/img/close.png") no-repeat 510px -0px; background-size: 30px auto;
+    }
+
+
+    #_comMsgPopModal_ .modal-title, #_comConfMsgPopModal_ .modal-title {
+      font-size:26px;
+      font-weight:700;
+      color:#333;
+      letter-spacing: -0.05em;
+      margin-top: 20px;
+      line-height: 1;
+      text-align: center;
+    }
+
+    #_comMsgPopModal_ .modal-body, #_comConfMsgPopModal_ .modal-body {
+      font-size:20px;
+      color:#333;
+      letter-spacing: -0.05em;
+      line-height: 1.6;
+      position: relative;
+      flex: 1 1 auto;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    #_comMsgPopModal_ .modal-button, #_comConfMsgPopModal_ .modal-button {
+        display: inline-block;
+        width: 197px;
+        height: 68px;
+        margin: 0 3px;
+        padding: 0.69565em 0 0.78261em;
+        font-size: 23px;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1;
+        vertical-align: middle;
+        border-radius: 100px;
+        border: 0;
+        outline: 0;
+        background: #3446f0;
+        -webkit-box-shadow: 5px 10px 20px rgba(52, 70, 240, 0.3);
+        box-shadow: 5px 10px 20px rgba(52, 70, 240, 0.3);
+    }
+    #_comMsgPopModal_ .modal-button-confirm, #_comConfMsgPopModal_ .modal-button-confirm {
+        display: inline-block; width: 197px; height: 68px; margin: 0 3px; padding: 0.69565em 0 0.78261em; font-size: 23px; font-weight: 700; color: #fff; line-height: 1; vertical-align: middle; border-radius: 100px; border: 0; background: #3446f0; -webkit-box-shadow: 5px 10px 20px rgba(52, 70, 240, 0.3); box-shadow: 5px 10px 20px rgba(52, 70, 240, 0.3);
+    }
+    #_comMsgPopModal_ .modal-button-deny, #_comConfMsgPopModal_ .modal-button-deny {
+        display: inline-block; width: 197px; height: 68px; margin: 0 3px; padding: 0.69565em 0 0.78261em; font-size: 23px; font-weight: 700; color: #fff; line-height: 1.47826; vertical-align: middle; border-radius: 100px; border: 0; background: #9c9daa; -webkit-box-shadow: 5px 10px 20px rgba(156, 157, 170, 0.3); box-shadow: 5px 10px 20px rgba(156, 157, 170, 0.3);
+    }
+    #_comMsgPopModal_ .modal-footer, #_comConfMsgPopModal_ .modal-footer {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0.75rem;
+      border-bottom-right-radius: calc(0.3rem - 1px);
+      border-bottom-left-radius: calc(0.3rem - 1px);
+      align-self: center;
+    }
+    .modal-dialog-centered {
+      display: flex;
+      align-items: center;
+      min-height: calc(100% - 1rem);
+    }
+    .modal-dialog-centered::before {
+      display: block;
+      height: calc(100vh - 1rem);
+      height: -webkit-min-content;
+      height: -moz-min-content;
+      height: min-content;
+      content: "";
+    }
+    .modal-dialog-centered.modal-dialog-scrollable {
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+    }
+    .modal-dialog-centered.modal-dialog-scrollable .modal-content {
+      max-height: none;
+    }
+    .modal-dialog-centered.modal-dialog-scrollable::before {
+      content: none;
+    }
+    .closeBtn{
+        wdith:50px;
+        height:50px;
+
+    }
+
+    .comNimbleLoader > img{
+        position:absolute;
+        left:calc(50% - 150px);
+        top:calc(50% - 200px);
+
+    }
+</style>
+
+<div id="_comMsgPopModal_" class="modal" tabindex="-1" role="dialog" style="z-index: 2040; display: none;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <!-- <span aria-hidden="true"><i class="fas fa-times" style="font-size:40px;"></i></span> -->
+
+                    <span class="closeBtn"><i class="fas fa-times" style="font-size:40px;"></i></span>
+                </button>
+            </div>
+            <h5 class="modal-title" style="font-size:36px; margin-top:0;">읽은알림 삭제</h5>
+            <div class="modal-body mgt20">
+                읽은 알림을 삭제하시겠습니까?
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="_comMsgModalSubmit_" class="modal-button" data-dismiss="modal">확인</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="_comConfMsgPopModal_" class="modal" tabindex="-1" role="dialog" style="z-index: 2040; display: none;">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fas fa-times" style="font-size:40px;"></i></span>
+                </button>
+            </div>
+            <h5 class="modal-title" style="font-size:36px; margin-top:0;">제목</h5>
+            <div class="modal-body mgt20">
+                내용
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="_comConfMsgModalSubmit_" class="modal-button-confirm" data-dismiss="modal">
+                    확인
+                </button>
+                <button class="modal-button-deny" id="_comConfMsgModalCancel_" data-dismiss="modal" type="button">취소
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="comNimbleLoader">
+    <img src="/resources/fsec/images/loading.gif" alt="loadingGif" style="height: auto;">
+</div>
+<script>
+    $('#_comMsgPopModal_').on('hidden.bs.modal', function() { fn_setPageLoading(false); $('#_comMsgModalSubmit_').click(); });
+    $('#_comConfMsgPopModal_').on('hidden.bs.modal', function() { fn_setPageLoading(false); $('#_comConfMsgModalCancel_').click(); });
+    $('#_comMsgPopModal_').on('show.bs.modal', function() { $('#_comMsgModalSubmit_').focus(); });
+    $(document).ready(function(){
+        $('#_comMsgPopModal_').hide();
+        $('#_comConfMsgPopModal_').hide();
+    });
+</script>
+
+<!-- <div class="modal fade" id="_comMsgPopModal_" role="dialog">
+    <div class="modal-dialog">
+        Modal content
+        <div  class="layer-pop">
+            <div class="layer-wrap">
+                <div class="layer-tit">읽은알림 삭제</div>
+                <div class="layer-cont">
+                    <div>
+                        컨텐츠
+                        읽은 알림을 삭제하시겠습니까?
+                    </div>
+                </div>
+                <div class="area-btn">
+                    <button type="button" id="_comMsgModalSubmit_" class="btn-color" data-dismiss="modal">확인</button>
+                </div>
+                <button class="btn btn-default layer-close" data-dismiss="modal" type="button">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div> -->
+
+
+<!-- <div class="modal fade" id="_comConfMsgPopModal_" role="dialog">
+    <div class="modal-dialog">
+        Modal content
+        <div  class="layer-pop">
+            <div class="layer-wrap">
+                <div class="layer-tit">읽은알림 삭제</div>
+                <div class="layer-cont">
+                    <div>
+                        컨텐츠
+                        읽은 알림을 삭제하시겠습니까?
+                    </div>
+                </div>
+                <div class="area-btn">
+                    <button class="btn-white" id="_comConfMsgModalCancel_" data-dismiss="modal" type="button">취소</button>
+                    <button type="button" id="_comConfMsgModalSubmit_" class="btn-color" data-dismiss="modal">확인</button>
+                </div>
+                <button class="btn btn-default layer-close" data-dismiss="modal" type="button">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div> -->
+
+
+<!-- <div class="modal fade" id="_comMsgWaitModal_" role="dialog">
+    <div class="modal-dialog">
+        Modal content
+        <div  class="layer-pop">
+            <div class="layer-wrap">
+                <div class="layer-tit">알림</div>
+                <div class="layer-cont">
+                    <div>
+                        컨텐츠
+                        현재 접속인원이 많습니다.<br><br>
+                        잠시만 기다려 주시기 바랍니다.
+                    </div>
+                </div>
+                <button class="btn btn-default layer-close" data-dismiss="modal" type="button">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div> -->
+
+<style>
+    .layer-wrap {
+        position: relative;
+        padding: 30px 40px;
+        color: #000;
+    }
+    .layer-tit {
+        padding-bottom: 14px;
+        font-size: 18px;
+        font-weight: bold;
+        text-align: left;
+    }
+    .b-tit {
+        margin-top: 40px;
+        font-size: 18px;
+        color: #333;
+        padding: 0 20px 10px 20px;
+        border-bottom: 2px solid #000;
+        text-align: left;
+    }
+    .btn-color:hover {
+        background: #d8522e;
+        color: #fff;
+    }
+    .btn-color {
+        min-width: 100px;
+        height: 40px;
+        padding: 0 12px;
+        border: 1px solid #F26A46;
+        line-height: 37px;
+        color: #fff;
+        background: #F26A46;
+    }
+</style>
+<script>
+    /* $('#_comMsgPopModal_, #_comConfMsgPopModal_').on('hidden.bs.modal', function() { fn_setPageLoading(false); });
+    $('#_comMsgPopModal_').on('show.bs.modal', function() { $('#_comMsgModalSubmit_').focus(); }); */
+
+
+    $(document).on('click', '.quick-install', function() {
+
+        _ModalPopup.fire({
+            html: '<div id="_comUploaderContPopModal_" role="dialog">'+
+                        '<div>'+
+                            '<div>'+
+                                '<div class="layer-wrap">'+
+                                    '<div class="layer-tit">Findx File Manager 수동설치</div>'+
+                                    '<div class="layer-cont">'+
+                                        '<div>'+
+                                            '<div class="desc-cnt">'+
+                                                '<h4 class="b-tit">1. \'Findx File Manager 다운로드\'를 클릭합니다.</h4>'+
+                                                '<div class="form-submit btn-cnt mgt-40">'+
+                                                    '<a href="/download.do?ftp=2&fnm=' + fn_encdata("8b272196-393c-4029-b8fc-62bde30fe723") + '&ofnm=Findx%20File%20Manager.exe" class="btn-color" style="width:240px;"><i class="bico-w-down"></i> Findx File Manager 다운로드</a>'+
+                                                '</div>'+
+                                            '</div>'+
+                                            '<div class="desc-cnt">'+
+                                                '<h4 class="b-tit">2. \'Findx File Manager 다운로드\' 클릭 후 상단 혹은 하단의 \'실행\'이나 \'저장\'을 클릭해주세요.</h4>'+
+                                                '<img src="/resources/fsec/images/uploader/uploader_01.jpg" class="mgt-20" style="width:100%;" />'+
+                                            '</div>'+
+                                            '<div class="desc-cnt">'+
+                                                '<h4 class="b-tit">2-1. \'Windows의 PC 보호\' 알림시 \'추가정보\' > \'실행\' 순으로 클릭해주세요.</h4>'+
+                                                '<img src="/resources/fsec/images/uploader/uploader_01_1.jpg" class="mgt-20" style="width:420px;" />'+
+                                            '</div>'+
+                                            '<div class="desc-cnt">'+
+                                                '<h4 class="b-tit">3. \'Findx File Manager\' 설치가 완료되면 \'확인\'을 클릭해주세요.</h4>'+
+                                                '<img src="/resources/fsec/images/uploader/uploader_02.jpg" class="mgt-20" style="width:420px;" />'+
+                                            '</div>'+
+                                            '<div class="desc-cnt">'+
+                                                '<h4 class="b-tit">4. 파일 업로드 / 다운로드 시 상단 알림 영역에서 \'Findx File Manager 열기\'를 클릭해주세요.</h4>'+
+                                                '<img src="/resources/fsec/images/uploader/uploader_03.jpg" class="mgt-20" style="width:420px;" />'+
+                                            '</div>'+
+                                            '<div class="desc-cnt">'+
+                                                '<h4 class="b-tit">5. 파일 업로드 시 \'업로드할 파일 선택\' > \'열기\' > \'업로드 시작\'을  클릭해주세요.</h4>'+
+                                                '<img src="/resources/fsec/images/uploader/uploader_04.jpg" class="mgt-20" style="width:420px;" />'+
+                                            '</div>'+
+                                            '<div class="desc-cnt">'+
+                                                '<h4 class="b-tit">6. 파일 다운로드 시 다운로드할 폴더 선택 후 \'폴더선택\'을  클릭해주세요.</h4>'+
+                                                '<img src="/resources/fsec/images/uploader/uploader_05.jpg" class="mgt-20" style="width:420px;" />'+
+                                            '</div>'+
+                                        '</div>'+
+                                    '</div>'+
+                                '</div>'+
+                            '</div>'+
+                        '</div>'+
+                    '</div>',
+                    confirmButtonText: '확인',
+                    showConfirmButton: true,
+                    showDenyButton: false,
+                    reverseButtons: false,
+                    allowOutsideClick: true
+        });
+    });
+</script>
+
+<form name="chattingForm">
+    <input type="hidden" name="joinkey" value="">
+    <input type="hidden" name="chattype" value="">
+    <input type="hidden" name="partis" value="">
+
+    <!-- <input type="hidden" name="chatTitle" value="" />
+    <input type="hidden" name="chatOwnerNm" value=""/>
+    <input type="hidden" name="chatImagePath" value=""/>
+    <input type="hidden" name="chatFtp" value=""/>
+    <input type="hidden" name="chatOwnerId" value=""/>
+    <input type="hidden" name="chatSaleNo" value=""/> -->
+</form>
+
+<script>
+
+    function fn_chatPopup(joinkey, chattype){
+        fn_chatPopup(joinkey, chattype, '')
+    }
+
+    function fn_chatPopup(joinkey, chattype, owner){
+
+        $('input[name=joinkey]').val(joinkey);
+        $('input[name=chattype]').val(chattype);
+        $('input[name=partis]').val(owner);
+        /*$('input[name=chatTitle]').val(ownerNm);
+        $('input[name=chatOwnerNm]').val(ownerNm);
+        $('input[name=chatImagePath]').val(imagePath);
+        $('input[name=chatFtp]').val(ftp);
+        $('input[name=chatOwnerId]').val(ownerId);
+        $('input[name=chatSaleNo]').val(saleNo); */
+
+        //console.log(goodsNo, ownerNm, imagePath, ftp, ownerId, saleNo);
+        var myForm = document.chattingForm;
+        var url = "prodChat.do?cmnx=44";
+        window.open("" ,"chattingForm", "top=10, left=10, width=1010, height=680, status=no, menubar=no, toolbar=no, resizable=no");
+        myForm.action =url;
+        myForm.method="post";
+        myForm.target="chattingForm";
+        myForm.submit();
+    }
+</script>
+
+
+<form id="SendPayForm_id" charset="UTF-8" method="POST" action="https://stdpay.inicis.com/payMain/pay"
+      accept-charset="UTF-8" target="iframe_508733d257d64"><input type="hidden" name="version" value="1.0"><input
+        type="hidden" name="mid" value="fsecorkr00"><input type="hidden" name="goodname"
+                                                           value="세대별로 알아보는 온라인 커뮤니티 이용 행태"><input type="hidden"
+                                                                                                   name="oid"
+                                                                                                   value="FSI1699852506939"><input
+        type="hidden" name="price" value="100000"><input type="hidden" name="currency" value="WON"><input type="hidden"
+                                                                                                          name="buyername"
+                                                                                                          value="박정관"><input
+        type="hidden" name="buyertel" value="010-9981-9798"><input type="hidden" name="buyeremail" value="jkpark"><input
+        type="hidden" name="timestamp" value="1699852506939"><input type="hidden" name="signature"
+                                                                    value="90abf7dc384e704fb6486075307786e626702747832b8ab34bb2cf819ec40047"><input
+        type="hidden" name="returnUrl" value="https://www.findatamall.or.kr/fsec/epay/INIStdPayReturn.do?cmnx=44"><input
+        type="hidden" name="mKey" value="d027dca01b4904d791b721a4a9a6e14aff071baeb768a25070d6eedf462d13c6"><input
+        type="hidden" name="gopaymethod" value="Card:DirectBank:VBank"><input type="hidden" name="acceptmethod"
+                                                                              value="CARDPOINT:HPP(2):va_receipt:below1000:SKIN():KWPY_TYPE(0):KWPY_VAT(0)"><input
+        type="hidden" name="languageView" value=" "><input type="hidden" name="charset" value="UTF-8"><input
+        type="hidden" name="payViewType" value="overlay"><input type="hidden" name="closeUrl"
+                                                                value="https://www.findatamall.or.kr/fsec/epay/close.do?cmnx=44"><input
+        type="hidden" name="popupUrl" value="https://www.findatamall.or.kr/fsec/epay/popup.do?cmnx=44"><input
+        type="hidden" name="quotabase" value="2:3:4:5:6:11:12:24:36"><input type="hidden" name="ini_onlycardcode"
+                                                                            value=" "><input type="hidden"
+                                                                                             name="ini_cardcode"
+                                                                                             value=" "><input
+        type="hidden" name="ansim_quota" value=" "><input type="hidden" name="INIregno" value=" "><input type="hidden"
+                                                                                                         name="merchantData"
+                                                                                                         value="epayGoodsId:4873fb0d-7702-11ee-bf4b-f220ef21bb88||epayRtnUrl:/fsec/dataProd/buyProdDone.do?cmnx=44||epayPriceType:2||epayPurchaseId:null||epayUseInfoIdx:16730||epayOwnerId:19443||ssMemberIdx:231100048||ss_usr_memberId:jkpark||provideWay:null||buyerCompIdx:null||subscribeIdx:null||subscribeCnt:null"><input
+        id="requestByJs" name="requestByJs" type="hidden" value="true"></form>
+
+
+<div class="inipay_modal-backdrop fade in"></div>
+<div id="inicisModalDiv" class="inipay_modal fade in" tabindex="-1" role="dialog" aria-hidden="false"
+     style="display: block;">
+    <div class="inipay_modal-body">
+        <iframe name="iframe_508733d257d64" id="iframe" class="inipay_iframe" frameborder="0" scrolling="no"
+                allowtransparency="true" title="KG이니시스 결제창"></iframe>
+    </div>
+</div>
+</body>
+</html>
