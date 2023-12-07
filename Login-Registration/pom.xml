@@ -81,6 +81,22 @@
             <scope>system</scope>
             <systemPath>${basedir}/lib/INIpaySample_v1.3.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>kr.co.linkhub</groupId>
+            <artifactId>popbill-spring-boot-starter</artifactId>
+            <version>1.9.2</version>
+        </dependency>
 
 
     </dependencies>

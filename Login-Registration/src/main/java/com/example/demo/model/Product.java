@@ -20,12 +20,14 @@ public class Product {
     private Long id;
     private String name;
     private int price;
+    private String tid;
 
     // 사용자 지정 생성자
-    public Product(Long id, String name, int price) {
+    public Product(Long id, String name, int price, String tid) {
         this.id = id;
         this.name = name;
         this.price = price;
+        this.tid = tid;
     }
 
     // getters and setters 생략

@@ -10,4 +10,5 @@ import lombok.*;
 public class ProductDto {
     private String Name;
     private double price;
+    private String tid;
 }

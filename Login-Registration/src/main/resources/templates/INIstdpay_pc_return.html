@@ -82,6 +82,7 @@
 					<label class="col-10 col-sm-9 reinput" th:text="${resultMap.containsKey('applTime') ? resultMap.applTime : 'N/A'}"></label>
 
 				</div>
+				<input type="hidden" id="msg" th:value="${resultMap.resultMsg}"/>
 			</form>
 
 			<button onclick="location.href='/products/pay'" class="btn_solid_pri col-6 mx-auto btn_lg"
@@ -91,6 +92,15 @@
 	</section>
 
 </main>
+
+<script th:inline="javascript">
+	let rtnMsg = [[${rtnMSg}]];
+	var resultMsg = /*[[${resultMap.resultMsg}]]*/ '';
+<!--	rtnMsg = document.getElementById("msg").value;-->
+	console.log(rtnMsg);
+	console.log(resultMsg);
+<!--	alert(rtnMsg);-->
+</script>
 
 </body>
 
