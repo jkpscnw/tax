@@ -33,6 +33,7 @@
 
         <td><button type="button" th:onclick="delete([[${product.id}]])">삭제</button></td>
         <td><button type="button" th:onclick="order([[${product.id}]])">구매</button></td>
+        <div th:text="${prchs.fileSz / 1024} + 'KB'">24.2KB</div>
     </tr>
     </tbody>
 </table>
