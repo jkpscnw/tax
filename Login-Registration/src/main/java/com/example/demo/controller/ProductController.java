@@ -2,10 +2,6 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Product;
 import com.example.demo.service.ProductService;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.inicis.std.util.HttpUtil;
 import com.inicis.std.util.ParseUtil;
 import com.inicis.std.util.SignatureUtil;
@@ -29,7 +25,6 @@ import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -49,10 +44,6 @@ import com.popbill.api.TaxinvoiceService;
 import com.popbill.api.taxinvoice.Taxinvoice;
 import com.popbill.api.taxinvoice.TaxinvoiceAddContact;
 import com.popbill.api.taxinvoice.TaxinvoiceDetail;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 
 
 @Controller
@@ -135,7 +126,7 @@ public class ProductController {
         String mKey = SignatureUtil.hash(signKey, "SHA-256");
         String timestamp = SignatureUtil.getTimestamp();
         String orderNumber = mid + SignatureUtil.getTimestamp();
-        String price = "5";
+        String price = "1";
         String use_chkfake = "Y";
 
         Map<String, String> signParam = new HashMap<String, String>();
@@ -347,45 +338,8 @@ public class ProductController {
         }
     }
 
-    public class AES128 {
-
-        public Key getAESKey(String apiKey) throws Exception {
-            Key keySpec;
-
-            String key = apiKey;
-            byte[] keyBytes = new byte[16];
-            byte[] b = key.getBytes("UTF-8");
-
-            int len = b.length;
-            if (len > keyBytes.length) {
-                len = keyBytes.length;
-            }
-
-            System.arraycopy(b, 0, keyBytes, 0, len);
-            keySpec = new SecretKeySpec(keyBytes, "AES");
-
-            return keySpec;
-        }
-
-        // AES encryption
-        public String encAES(String str, String apiKey, String ivKey) throws Exception {
-            Key keySpec = getAESKey(apiKey);
-            String iv = ivKey;
-            Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            c.init(Cipher.ENCRYPT_MODE, keySpec, new IvParameterSpec(iv.getBytes("UTF-8")));
-            byte[] encrypted = c.doFinal(str.getBytes("UTF-8"));
-            String enStr = Base64.getEncoder().encodeToString(encrypted);
-
-            return enStr;
-        }
-
-    }
     @RequestMapping("/refund")
-    public void refund(HttpServletRequest request, Model model) throws Exception {
-
-        // 부분취소일 경우 2가지 수정
-        // - data1.put
-        // - apiUrl
+    public static void main(String[] args) throws Exception {
 
         System.out.println("refund 진입");
 
@@ -396,21 +350,50 @@ public class ProductController {
         //step1. 요청을 위한 파라미터 설정
         String key = "ItEQKi3rY7uvDS8l";
         String mid = "INIpayTest";
-//        String type = "refund";
-        String type = "partialRefund";
+        String type = "refund";
         String timestamp = fourteen_format.format(date_now);
         String clientIp = "127.0.0.1";
         Map<String, Object> data1 = new HashMap<String, Object>();
-        data1.put("tid", "StdpayCARDINIpayTest20231222170835426857");
+        data1.put("tid", "StdpayCARDINIpayTest20231122085633372275");
         data1.put("msg", "환불");
 
-        // 부분취소일 경우 추가
-        data1.put("price", "5");
-        data1.put("confirmPrice", "0");
-        data1.put("currency", "WON");
-        data1.put("tax", "0");
-        data1.put("taxfree", "0");
-        // 부분취소일 경우 추가
+//        String key = "2jHOlQBdude18UWl";
+//        String mid = "SIRxilitol";
+
+
+
+//        String key = "iKzlYioaXHnMMXg9";
+//        String key = "YxgjvCoMhnrCza==";
+//        String mid = "INIpayTest";
+//        String type = "refund";
+//        String timestamp = fourteen_format.format(date_now);
+//        String clientIp = "127.0.0.1";
+//        Map<String, Object> data1 = new HashMap<String, Object>();
+//        data1.put("tid", "StdpayCARDINIpayTest20231122085633372275");
+//        data1.put("msg", "환불");
+
+
+//        StdpayCARDINIpayTest20231109171948308457
+//                StdpayCARDINIpayTest20231114100246789900
+//        StdpayCARDINIpayTest20231114102149315852
+//                StdpayCARDINIpayTest20231114105054544504
+//        StdpayCARDINIpayTest20231114105713666182
+//                StdpayCARDINIpayTest20231114110212513428
+//        StdpayCARDINIpayTest20231109171948308452
+//                StdpayCARDINIpayTest20231114145117653931
+//        StdpayCARDINIpayTest20231116180312688330
+//                StdpayCARDINIpayTest20231116180312688330
+//        StdpayCARDINIpayTest20231116180312688330
+//                StdpayCARDINIpayTest20231117105221798884
+//        StdpayCARDINIpayTest20231109171948307777
+//                StdpayCARDINIpayTest20231109171948307777
+//        StdpayCARDINIpayTest20231117163143869376
+//                StdpayCARDINIpayTest20231117165230013487
+//        StdpayCARDINIpayTest20231117165230013487
+//                StdpayCARDINIpayTest20231120155312826529
+//        StdpayCARDINIpayTest20231120192432456896
+//                StdpayCARDINIpayTest20231121100148074545
+//        StdpayVBNKINIpayTest20231121164126887357
 
 
         JSONObject data = new JSONObject(data1);
@@ -431,8 +414,7 @@ public class ProductController {
 
 
         // reqeust URL
-//        String apiUrl = "https://iniapi.inicis.com/v2/pg/refund";
-        String apiUrl = "https://iniapi.inicis.com/v2/pg/partialRefund";    // 부분취소일 경우
+        String apiUrl = "https://iniapi.inicis.com/v2/pg/refund";
 
         JSONObject respJson = new JSONObject();
         respJson.put("mid", mid);
@@ -466,65 +448,6 @@ public class ProductController {
 
                 //step3. 요청 결과
                 System.out.println(br.readLine());
-//                {"resultCode":"00","resultMsg":"정상처리되었습니다.","cancelDate":"20231214","cancelTime":"142820"}
-//                {"resultCode":"500626","resultMsg":"기 취소 거래"}
-
-
-
-//                {"resultCode":"500706","resultMsg":"부분취소 잔액 오류","prtcDate":"20231222","prtcTime":"171852","tid":"INIAPIRPAYINIpayTest20231222171852872189","prtcTid":"StdpayCARDINIpayTest20231222170835426857","prtcPrice":"3","prtcRemains":"7","prtcCnt":"1","prtcType":"1"}
-
-
-//                {"resultCode":"00","resultMsg":"정상처리되었습니다.","prtcDate":"20231222","prtcTime":"172039","tid":"INIAPIRPAYINIpayTest20231222172039643128","prtcTid":"StdpayCARDINIpayTest20231222170835426857","prtcPrice":"2","prtcRemains":"5","prtcCnt":"2","prtcType":"1"}
-
-//                {"resultCode":"00","resultMsg":"정상처리되었습니다.","prtcDate":"20231222","prtcTime":"173954","tid":"INIAPIRPAYINIpayTest20231222173954292231","prtcTid":"StdpayCARDINIpayTest20231222170835426857","prtcPrice":"5","prtcRemains":"0","prtcCnt":"3","prtcType":"1"}
-
-
-
-
-//                String jsonResponse = br.readLine(); // 응답 내용을 저장
-//                System.out.println(jsonResponse); // 응답 내용 출력
-//                JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
-
-
-
-                // JSON 파싱을 위한 ObjectMapper 생성
-                ObjectMapper objectMapper = new ObjectMapper();
-                // JSON 문자열을 읽어와서 JsonNode로 파싱
-                JsonNode jsonNode = objectMapper.readTree(br.readLine());
-                // "resultCode" 값을 가져오기
-                String resultCode = jsonNode.get("resultCode").asText();
-                String resultMsg = jsonNode.get("resultMsg").asText();
-                System.out.println("resultCode: " + resultCode);
-                System.out.println("resultMsg: " + resultMsg);
-
-
-
-                // JSON 문자열을 읽어와서 JsonObject로 파싱
-//                JsonObject jsonObject = JsonParser.parseReader(br).getAsJsonObject();
-                // "resultCode" 값을 가져오기
-//                String resultCode = jsonObject.get("resultCode").getAsString();
-//                String resultMsg = jsonObject.get("resultMsg").getAsString();
-                // 결과 출력
-//                System.out.println("resultCode: " + resultCode);
-//                System.out.println("resultMsg: " + resultMsg);
-
-
-
-                // JSON 파싱을 위한 ObjectMapper 생성
-//                ObjectMapper objectMapper = new ObjectMapper();
-//                // JSON 문자열을 읽어와서 JsonNode로 파싱
-//                JsonNode jsonNode = objectMapper.readTree(br.readLine());
-//                // "resultCode" 값을 가져오기
-//                String resultCode = jsonNode.get("resultCode").asText();
-//                String resultMsg = jsonNode.get("resultMsg").asText();
-////                String cancelDate = jsonNode.get("cancelDate").asText();
-////                String cancelTime = jsonNode.get("cancelTime").asText();
-//                // 결과 출력
-//                System.out.println("resultCode: " + resultCode);
-//                System.out.println("resultMsg: " + resultMsg);
-////                System.out.println("cancelDate: " + cancelDate);
-////                System.out.println("cancelDate: " + cancelDate);
-
                 br.close();
             }
 
@@ -535,135 +458,6 @@ public class ProductController {
 
 
 
-    /*가상계좌 환불*/
-    @RequestMapping("/refundVacct")
-    public void refundVacct(HttpServletRequest request, Model model) throws Exception {
-
-            SHA512 sha512 = new SHA512();
-            AES128 aes128 = new AES128();
-            Date date_now = new Date(System.currentTimeMillis());
-            SimpleDateFormat fourteen_format = new SimpleDateFormat("yyyyMMddHHmmss");
-
-            //step1. 요청을 위한 파라미터 설정
-            String key = "ItEQKi3rY7uvDS8l";
-            String iv = "HYb3yQ4f65QL89==";
-            String mid = "INIpayTest";
-//            String type = "refund";
-            String type = "partialRefund";
-            String timestamp = fourteen_format.format(date_now);
-            String clientIp = "127.0.0.1";
-
-            String refundAcctNum = "07308492201019";  //환불계좌번호
-
-
-            // AES Encryption
-            String enc_refundAcctNum = aes128.encAES(refundAcctNum, key, iv);
-
-            Map<String, Object> data1 = new HashMap<String, Object>();
-            data1.put("tid", "StdpayVBNKINIpayTest20231222174142450473");   //취소요청할 승인TID
-            data1.put("msg", "가상계좌 전체환불 테스트");
-            data1.put("refundAcctNum", enc_refundAcctNum);
-            data1.put("refundBankCode", "03");          //환불 계좌코드
-            data1.put("refundAcctName", "박정관");     //환불 계좌 예금주명
-
-            // 부분취소일 경우 추가
-            data1.put("price", "4");
-            data1.put("confirmPrice", "0");
-            // 부분취소일 경우 추가
-
-            JSONObject data = new JSONObject(data1);
-
-            // Hash Encryption
-            String plainTxt = key + mid + type + timestamp + data ;
-            plainTxt = plainTxt.replaceAll("\\\\", "");
-            String hashData = sha512.hash(plainTxt);
-
-
-            // reqeust URL
-//            String apiUrl = "https://iniapi.inicis.com/v2/pg/refund/vacct";
-            String apiUrl = "https://iniapi.inicis.com/v2/pg/partialRefund/vacct";
-
-            JSONObject respJson = new JSONObject();
-            respJson.put("mid", mid);
-            respJson.put("type", type);
-            respJson.put("timestamp",timestamp);
-            respJson.put("clientIp",clientIp);
-            respJson.put("data",data);
-            respJson.put("hashData",hashData);
-
-
-            //step2. key=value 로 post 요청
-            try {
-                URL reqUrl = new URL(apiUrl);
-                HttpURLConnection conn = (HttpURLConnection) reqUrl.openConnection();
-
-                if (conn != null) {
-                    conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
-                    conn.setRequestMethod("POST");
-                    conn.setDefaultUseCaches(false);
-                    conn.setDoOutput(true);
-
-                    if (conn.getDoOutput()) {
-                        conn.getOutputStream().write(respJson.toString().getBytes("UTF-8"));
-                        conn.getOutputStream().flush();
-                        conn.getOutputStream().close();
-                    }
-
-                    conn.connect();
-
-                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
-
-                    // JSON 응답을 파싱합니다.
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    JsonNode jsonNode = objectMapper.readTree(br.readLine());
-
-                    // JsonNode를 사용하여 JSON 객체에서 값을 가져옵니다.
-//                    String resultCode = jsonNode.get("resultCode").asText();
-//                    String resultMsg = jsonNode.get("resultMsg").asText();
-//                    String cancelDate = jsonNode.get("cancelDate").asText();
-//                    String cancelTime = jsonNode.get("cancelTime").asText();
-//                    String cshrCancelNum = jsonNode.get("cshrCancelNum").asText();
-
-                    String resultCode = jsonNode.has("resultCode") ? jsonNode.get("resultCode").asText() : "";
-                    String resultMsg = jsonNode.has("resultMsg") ? jsonNode.get("resultMsg").asText() : "";
-                    String cancelDate = jsonNode.has("cancelDate") ? jsonNode.get("cancelDate").asText() : "";
-                    String cancelTime = jsonNode.has("cancelTime") ? jsonNode.get("cancelTime").asText() : "";
-                    String cshrCancelNum = jsonNode.has("cshrCancelNum") ? jsonNode.get("cshrCancelNum").asText() : "";
-
-
-                    // 이제 이 변수들을 필요에 따라 사용할 수 있습니다.
-                    System.out.println("resultCode: " + resultCode);
-                    System.out.println("resultMsg: " + resultMsg);
-                    System.out.println("cancelDate: " + cancelDate);
-                    System.out.println("cancelTime: " + cancelTime);
-                    System.out.println("cshrCancelNum: " + cshrCancelNum);
-
-
-                    //step3. 요청 결과
-                    System.out.println(br.readLine());
-                    br.close();
-
-                    // 일반취소
-//                    {"resultCode":"00","resultMsg":"정상처리되었습니다.","cancelDate":"20231222","cancelTime":"170018","cshrCancelNum":"264322652"}
-
-
-                    // 부분취소
-//                    {"resultCode":"400623","resultMsg":"해당거래 없음","prtcDate":"20231222","prtcTime":"174552","tid":"INIAPIRPAYINIpayTest20231222174552912106","prtcTid":"StdpayVBNKINIpayTest20231222174142450473","prtcPrice":"1","prtcRemains":"4"}
-
-
-//                    {"resultCode":"00","resultMsg":"정상처리되었습니다.","prtcDate":"20231222","prtcTime":"174735","tid":"INIAPIRPAYINIpayTest20231222174735573150","prtcTid":"StdpayVBNKINIpayTest20231222174142450473","prtcPrice":"1","prtcRemains":"4","prtcCnt":"1","prtcType":"1"}
-
-//                    {"resultCode":"00","resultMsg":"정상처리되었습니다.","prtcDate":"20231222","prtcTime":"174927","tid":"INIAPIRPAYINIpayTest20231222174927233277","prtcTid":"StdpayVBNKINIpayTest20231222174142450473","prtcPrice":"4","prtcRemains":"0","prtcCnt":"2","prtcType":"1"}
-
-                }
-
-            }catch(Exception e ) {
-                e.printStackTrace();
-            }
-        }
-
-
-
 
 
     @ResponseBody
@@ -671,7 +465,7 @@ public class ProductController {
     public String handleVirtualAccountInput(@RequestParam HashMap<String, String> paramMap, HttpServletRequest request) throws Exception {
 
         System.out.println("vacctinput 진입");
-        
+
         String REMOTE_IP = request.getRemoteAddr();
         String PG_IP = REMOTE_IP.substring(0, 10);
 
@@ -1035,12 +829,16 @@ public class ProductController {
             m.addAttribute("Response", response);
 
         } catch (PopbillException e) {
+
+            m.addAttribute("Response", e);
+
             // 예외 발생 시, e.getCode() 로 오류 코드를 확인하고, e.getMessage()로 오류 메시지를 확인합니다.
             System.out.println("오류 코드" + e.getCode());
             System.out.println("오류 메시지" + e.getMessage());
         }
 
-        return "response";
+//        return "response";
+        return "Taxinvoice/issueResponse";
     }
 
 

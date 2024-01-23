@@ -12,6 +12,12 @@
 <button th:onclick="'location.href=\''+ @{/products/add} + '\''">추가</button>
 
 
+
+
+<!-- 카테고리별로 루프 돌기 -->
+<div th:each="entry : ${productsByCtg}">
+    <h2 th:text="${entry.key}"></h2>
+
 <table>
     <thead>
     <tr>
@@ -22,8 +28,13 @@
     </tr>
     </thead>
     <tbody>
+    <img th:src="@{'/path/to/images/' + ${imageName}}" alt="Image">
+
+    <td th:utext="${epay.stlmSn != null && epay.payMethod != null ? 'PG결제<br/>(‘ + ${epay.payMethod} + ‘)' : (epay.stlmSn != null ? 'PG결제' : '별도결제')}">PG결제<br/>(신용카드)</td>
+
+
     <!-- 상품 목록을 동적으로 출력 -->
-    <tr th:each="product : ${products}">
+    <tr th:each="product : ${entry.value}">
         <td th:text="${product.id}"></td>
         <td th:text="${product.name}"></td>
         <td th:text="${product.price}"></td>
@@ -34,9 +45,29 @@
         <td><button type="button" th:onclick="delete([[${product.id}]])">삭제</button></td>
         <td><button type="button" th:onclick="order([[${product.id}]])">구매</button></td>
         <div th:text="${prchs.fileSz / 1024} + 'KB'">24.2KB</div>
+
+        <div th:style="${condition ? 'background-color: yellow;' : 'background-color: green;'}"></div>
+
+        <div th:style="'background-color: ' + (${object.status} == 'active' ? 'green;' : 'red;')"></div>
+
+
+        <div th:with="exampleData='1,2,3,4,5'"></div>
+
+        <!-- 버튼을 쉼표가 포함된 경우에만 렌더링 -->
+        <button th:if="${#strings.contains(exampleData, ',')}" type="button">버튼</button>
+
+        <button th:if="${#strings.split(exampleData, ',').length >= 2}" type="button">버튼</button>
+
+        <p th:utext="${#numbers.formatInteger(businessNumber, '#,###')}"></p>
+
+        <p th:utext="${businessNumber.substring(0, 3) + '-' + businessNumber.substring(3, 5) + '-' + businessNumber.substring(5)}"></p>
+
+
     </tr>
     </tbody>
 </table>
+
+</div>
 
 <script>
     function editProduct(productId) {
@@ -45,5 +76,104 @@
     }
 </script>
 
+
+<!--<form id="SendPayForm_id" charset="UTF-8" method="POST" action="https://stdpay.inicis.com/payMain/pay" accept-charset="UTF-8" target="iframe_c93efc9b4d2f4">-->
+<!--    <input type="hidden" name="version" value="1.0">-->
+<!--    <input type="hidden" name="mid" value="fsecorkr00">-->
+<!--    <input type="hidden" name="goodname" value="세대별로 알아보는 온라인 커뮤니티 이용 행태">-->
+<!--    <input type="hidden" name="oid" value="FSI1699246300041">-->
+<!--    <input type="hidden" name="price" value="100000">-->
+<!--    <input type="hidden" name="currency" value="WON">-->
+<!--    <input type="hidden" name="buyername" value="박정관">-->
+<!--    <input type="hidden" name="buyertel" value="010-9981-9798">-->
+<!--    <input type="hidden" name="buyeremail" value="jkpark">-->
+<!--    <input type="hidden" name="timestamp" value="1699246300041">-->
+<!--    <input type="hidden" name="signature" value="175f727b24a97b8a2ed450024ffd4b662e1f202983a7d4e64069b36a614133c4">-->
+<!--    <input type="hidden" name="returnUrl" value="https://www.findatamall.or.kr/fsec/epay/INIStdPayReturn.do?cmnx=44">-->
+<!--    <input type="hidden" name="mKey" value="d027dca01b4904d791b721a4a9a6e14aff071baeb768a25070d6eedf462d13c6">-->
+<!--    <input type="hidden" name="gopaymethod" value="Card:DirectBank:VBank">-->
+<!--    <input type="hidden" name="acceptmethod" value="CARDPOINT:HPP(2):va_receipt:below1000:SKIN():KWPY_TYPE(0):KWPY_VAT(0)">-->
+<!--    <input type="hidden" name="languageView" value=" ">-->
+<!--    <input type="hidden" name="charset" value="UTF-8">-->
+<!--    <input type="hidden" name="payViewType" value="overlay">-->
+<!--    <input type="hidden" name="closeUrl" value="https://www.findatamall.or.kr/fsec/epay/close.do?cmnx=44">-->
+<!--    <input type="hidden" name="popupUrl" value="https://www.findatamall.or.kr/fsec/epay/popup.do?cmnx=44">-->
+<!--    <input type="hidden" name="quotabase" value="2:3:4:5:6:11:12:24:36">-->
+<!--    <input type="hidden" name="ini_onlycardcode" value=" ">-->
+<!--    <input type="hidden" name="ini_cardcode" value=" ">-->
+<!--    <input type="hidden" name="ansim_quota" value=" ">-->
+<!--    <input type="hidden" name="INIregno" value=" ">-->
+<!--    <input type="hidden" name="merchantData" value="epayGoodsId:4873fb0d-7702-11ee-bf4b-f220ef21bb88||epayRtnUrl:/fsec/dataProd/buyProdDone.do?cmnx=44||epayPriceType:2||epayPurchaseId:null||epayUseInfoIdx:16598||epayOwnerId:19443||ssMemberIdx:231100048||ss_usr_memberId:jkpark||provideWay:null||buyerCompIdx:null||subscribeIdx:null||subscribeCnt:null">-->
+<!--    <input id="requestByJs" name="requestByJs" type="hidden" value="true">-->
+<!--</form>-->
+
+
+
+
 </body>
 </html>
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>새 창에서 함수 호출</title>
+    <script>
+        function openNewWindowAndCallFunction() {
+            // 새 창 열기
+            var newWindow = window.open('/epay/list', '_blank');
+
+            // 새 창에서 이미 정의된 함수 호출
+            newWindow.onload = function() {
+                // 부모 창에서 자식 창으로 메시지 보내기
+                newWindow.postMessage('callDetailFunction', '*');
+            };
+        }
+
+        // 이 함수는 부모 창에서 호출됨
+        function receiveMessage(event) {
+            if (event.data === 'callDetailFunction') {
+                // 새 창의 detail 함수 호출
+                detail();
+            }
+        }
+
+        // 부모 창에서 메시지 수신을 위한 이벤트 리스너 등록
+        window.addEventListener('message', receiveMessage, false);
+
+        // 새 창에서 호출할 함수
+        function detail() {
+            alert('새 창에서 detail 함수가 호출되었습니다!');
+        }
+    </script>
+</head>
+<body>
+<button onclick="openNewWindowAndCallFunction()">새 창 열기</button>
+</body>
+</html>
+
+
+<!-- /epay/list 페이지에서의 스크립트 코드 -->
+<script>
+    // 부모 창에서 메시지 수신을 위한 이벤트 리스너 등록
+    window.addEventListener('message', receiveMessage, false);
+
+    // 부모 창에서 보낸 메시지를 처리하는 함수
+    function receiveMessage(event) {
+        if (event.data === 'callDetailFunction') {
+            // 새 창의 detail 함수 호출
+            detail();
+        }
+    }
+
+    // 새 창에서 호출할 함수
+    function detail() {
+        alert('새 창에서 detail 함수가 호출되었습니다!');
+    }
+</script>
+
