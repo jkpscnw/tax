@@ -28,11 +28,6 @@
     </tr>
     </thead>
     <tbody>
-    <img th:src="@{'/path/to/images/' + ${imageName}}" alt="Image">
-
-    <td th:utext="${epay.stlmSn != null && epay.payMethod != null ? 'PG결제<br/>(‘ + ${epay.payMethod} + ‘)' : (epay.stlmSn != null ? 'PG결제' : '별도결제')}">PG결제<br/>(신용카드)</td>
-
-
     <!-- 상품 목록을 동적으로 출력 -->
     <tr th:each="product : ${entry.value}">
         <td th:text="${product.id}"></td>
@@ -44,25 +39,6 @@
 
         <td><button type="button" th:onclick="delete([[${product.id}]])">삭제</button></td>
         <td><button type="button" th:onclick="order([[${product.id}]])">구매</button></td>
-        <div th:text="${prchs.fileSz / 1024} + 'KB'">24.2KB</div>
-
-        <div th:style="${condition ? 'background-color: yellow;' : 'background-color: green;'}"></div>
-
-        <div th:style="'background-color: ' + (${object.status} == 'active' ? 'green;' : 'red;')"></div>
-
-
-        <div th:with="exampleData='1,2,3,4,5'"></div>
-
-        <!-- 버튼을 쉼표가 포함된 경우에만 렌더링 -->
-        <button th:if="${#strings.contains(exampleData, ',')}" type="button">버튼</button>
-
-        <button th:if="${#strings.split(exampleData, ',').length >= 2}" type="button">버튼</button>
-
-        <p th:utext="${#numbers.formatInteger(businessNumber, '#,###')}"></p>
-
-        <p th:utext="${businessNumber.substring(0, 3) + '-' + businessNumber.substring(3, 5) + '-' + businessNumber.substring(5)}"></p>
-
-
     </tr>
     </tbody>
 </table>
@@ -110,70 +86,6 @@
 
 
 
+
 </body>
 </html>
-
-
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>새 창에서 함수 호출</title>
-    <script>
-        function openNewWindowAndCallFunction() {
-            // 새 창 열기
-            var newWindow = window.open('/epay/list', '_blank');
-
-            // 새 창에서 이미 정의된 함수 호출
-            newWindow.onload = function() {
-                // 부모 창에서 자식 창으로 메시지 보내기
-                newWindow.postMessage('callDetailFunction', '*');
-            };
-        }
-
-        // 이 함수는 부모 창에서 호출됨
-        function receiveMessage(event) {
-            if (event.data === 'callDetailFunction') {
-                // 새 창의 detail 함수 호출
-                detail();
-            }
-        }
-
-        // 부모 창에서 메시지 수신을 위한 이벤트 리스너 등록
-        window.addEventListener('message', receiveMessage, false);
-
-        // 새 창에서 호출할 함수
-        function detail() {
-            alert('새 창에서 detail 함수가 호출되었습니다!');
-        }
-    </script>
-</head>
-<body>
-<button onclick="openNewWindowAndCallFunction()">새 창 열기</button>
-</body>
-</html>
-
-
-<!-- /epay/list 페이지에서의 스크립트 코드 -->
-<script>
-    // 부모 창에서 메시지 수신을 위한 이벤트 리스너 등록
-    window.addEventListener('message', receiveMessage, false);
-
-    // 부모 창에서 보낸 메시지를 처리하는 함수
-    function receiveMessage(event) {
-        if (event.data === 'callDetailFunction') {
-            // 새 창의 detail 함수 호출
-            detail();
-        }
-    }
-
-    // 새 창에서 호출할 함수
-    function detail() {
-        alert('새 창에서 detail 함수가 호출되었습니다!');
-    }
-</script>
-
