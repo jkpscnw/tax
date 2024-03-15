@@ -2,14 +2,13 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Product;
 import com.example.demo.service.ProductService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inicis.std.util.HttpUtil;
 import com.inicis.std.util.ParseUtil;
 import com.inicis.std.util.SignatureUtil;
-import com.popbill.api.IssueResponse;
-import com.popbill.api.PopbillException;
-import com.popbill.api.TaxinvoiceService;
-import com.popbill.api.taxinvoice.Taxinvoice;
-import com.popbill.api.taxinvoice.TaxinvoiceDetail;
+import com.popbill.api.*;
+import com.popbill.api.taxinvoice.*;
 import jakarta.servlet.http.HttpServletRequest;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +41,6 @@ import com.popbill.api.IssueResponse;
 import com.popbill.api.PopbillException;
 import com.popbill.api.TaxinvoiceService;
 import com.popbill.api.taxinvoice.Taxinvoice;
-import com.popbill.api.taxinvoice.TaxinvoiceAddContact;
 import com.popbill.api.taxinvoice.TaxinvoiceDetail;
 
 
@@ -570,7 +568,6 @@ public class ProductController {
 
 
 
-
     @Autowired
     private TaxinvoiceService taxinvoiceService;
 
@@ -823,8 +820,23 @@ public class ProductController {
 
         try {
 
-            IssueResponse response = taxinvoiceService.registIssue("1234567890",
-                    taxinvoice, WriteSpecification, Memo, ForceIssue, DealInvoiceKey);
+            System.out.println("before");
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String json = objectMapper.writeValueAsString(taxinvoice);
+            System.out.println(json);
+
+
+
+
+//            IssueResponse response = taxinvoiceService.registIssue("1234567890", taxinvoice, WriteSpecification);
+            IssueResponse response = taxinvoiceService.registIssue("1234567890", taxinvoice, WriteSpecification, Memo, ForceIssue, DealInvoiceKey);
+
+
+//            세금계산서 열람주소 성공케이스
+//            https://test.popbill.com/Taxinvoice/024020709085000001
+
+            System.out.println("after");
 
             m.addAttribute("Response", response);
 
@@ -835,6 +847,76 @@ public class ProductController {
             // 예외 발생 시, e.getCode() 로 오류 코드를 확인하고, e.getMessage()로 오류 메시지를 확인합니다.
             System.out.println("오류 코드" + e.getCode());
             System.out.println("오류 메시지" + e.getMessage());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+
+
+
+
+//        return "response";
+        return "Taxinvoice/issueResponse";
+    }
+
+
+
+    @RequestMapping(value = "checkMgtKeyInUse", method = RequestMethod.GET)
+    public String checkMgtKeyInUse(Model m) {
+        /**
+         * 파트너가 세금계산서 관리 목적으로 할당하는 문서번호의 사용여부를 확인합니다.
+         * - 이미 사용 중인 문서번호는 중복 사용이 불가하고, 세금계산서가 삭제된 경우에만 문서번호의 재사용이 가능합니다.
+         * - https://developers.popbill.com/reference/taxinvoice/java/api/info#CheckMgtKeyInUse
+         */
+
+        // 세금계산서 유형 (SELL-매출, BUY-매입, TRUSTEE-위수탁)
+        com.popbill.api.taxinvoice.MgtKeyType keyType = com.popbill.api.taxinvoice.MgtKeyType.SELL;
+
+        // 세금계산서 문서번호, 1~24자리 (숫자, 영문, '-', '_') 조합으로 사업자 별로 중복되지 않도록 구성
+        String mgtKey = "20230102-BOOT001";
+
+        String isUseStr;
+
+        try {
+
+            boolean IsUse = taxinvoiceService.checkMgtKeyInUse(CorpNum, keyType, mgtKey);
+
+            isUseStr = (IsUse) ? "사용중" : "미사용중";
+
+            System.out.println("IsUse = " + IsUse);
+
+            m.addAttribute("Response", isUseStr);
+
+        } catch (PopbillException e) {
+            m.addAttribute("Response", e);
+//            m.addAttribute("Exception", e);
+//            return "exception";
+        }
+
+//        return "result";
+        return "Taxinvoice/issueResponse";
+    }
+
+    @RequestMapping(value = "checkIsMember", method = RequestMethod.GET)
+    public String checkIsMember(Model m) throws PopbillException {
+        /**
+         * 사업자번호를 조회하여 연동회원 가입여부를 확인합니다.
+         * - LinkID는 연동신청 시 팝빌에서 발급받은 링크아이디 값입니다.
+         * - https://developers.popbill.com/reference/taxinvoice/java/api/member#CheckIsMember
+         */
+
+        // 조회할 사업자번호, '-' 제외 10자리
+        String corpNum = "1234567890";
+
+        try {
+            Response response = taxinvoiceService.checkIsMember(corpNum, "FSEC");
+
+            m.addAttribute("Response", response);
+
+        } catch (PopbillException e) {
+            m.addAttribute("Response", e);
+//            m.addAttribute("Exception", e);
+//            return "exception";
         }
 
 //        return "response";
@@ -845,3 +927,82 @@ public class ProductController {
 
 
 }
+
+
+
+
+
+//CREATE TABLE TAX_INVOICE_INFO (
+//    TAX_INVOICE_SN INT PRIMARY KEY AUTO_INCREMENT,
+//    ISSUE_TYPE VARCHAR(3) COMMENT '발행형태',
+//    TAX_TYPE VARCHAR(2) COMMENT '과세형태',
+//    CHARGE_DIRECTION VARCHAR(3) COMMENT '과금방향',
+//    SERIAL_NUM VARCHAR(30) COMMENT '일련번호',
+//    KWON INT COMMENT '책번호 "권" 항목',
+//    HO INT COMMENT '책번호 "호" 항목',
+//    WRITE_DATE VARCHAR(8) COMMENT '작성일자',
+//    PURPOSE_TYPE VARCHAR(2) COMMENT '결제대금 수취여부',
+//    SUPPLY_COST_TOTAL VARCHAR(18) COMMENT '공급가액 합계',
+//    TAX_TOTAL VARCHAR(18) COMMENT '세액합계',
+//    TOTAL_AMOUNT VARCHAR(18) COMMENT '합계금액',
+//    CASH VARCHAR(18) COMMENT '현금',
+//    CHK_BILL VARCHAR(18) COMMENT '수표',
+//    CREDIT VARCHAR(18) COMMENT '외상',
+//    NOTE VARCHAR(18) COMMENT '어음',
+//    REMARK1 VARCHAR(150) COMMENT '비고1',
+//    REMARK2 VARCHAR(150) COMMENT '비고2',
+//    REMARK3 VARCHAR(150) COMMENT '비고3',
+//    INVOICER_MGT_KEY VARCHAR(24) COMMENT '공급자 문서번호',
+//    INVOICER_CORP_NUM VARCHAR(10) COMMENT '공급자 사업자번호',
+//    INVOICER_TAX_REG_ID VARCHAR(4) COMMENT '공급자 종사업장 식별번호',
+//    INVOICER_CORP_NAME VARCHAR(200) COMMENT '공급자 상호',
+//    INVOICER_CEO_NAME VARCHAR(100) COMMENT '공급자 대표자 성명',
+//    INVOICER_ADDR VARCHAR(300) COMMENT '공급자 주소',
+//    INVOICER_BIZ_TYPE VARCHAR(100) COMMENT '공급자 업태',
+//    INVOICER_BIZ_CLASS VARCHAR(100) COMMENT '공급자 종목',
+//    INVOICER_CONTACT_NAME VARCHAR(100) COMMENT '공급자 담당자 섬영',
+//    INVOICER_DEPT_NAME VARCHAR(100) COMMENT '공급자 담당자 부서명',
+//    INVOICER_TEL VARCHAR(20) COMMENT '공급자 담당자 연락처',
+//    INVOICER_HP VARCHAR(20) COMMENT '공급자 담당자 휴대폰',
+//    INVOICER_EMAIL VARCHAR(100) COMMENT '공급자 담당자 이메일',
+//    INVOICER_SMS_SEND_YN BOOLEAN COMMENT '공급자 알림문자 전송 여부',
+//    INVOICEE_MGT_KEY VARCHAR(24) COMMENT '공급받는자 문서번호',
+//    INVOICEE_TYPE VARCHAR(255) COMMENT '공급받는자 구분',
+//    INVOICEE_CORP_NUM VARCHAR(13) COMMENT '공급받는자 등록번호',
+//    INVOICEE_TAX_REG_ID VARCHAR(4) COMMENT '공급받는자 종사업장 식별번호',
+//    INVOICEE_CORP_NAME VARCHAR(200) COMMENT '공급받는자 상호',
+//    INVOICEE_CEO_NAME VARCHAR(100) COMMENT '공급받는자 대표자 성명',
+//    INVOICEE_ADDR VARCHAR(300) COMMENT '공급받는자 주소',
+//    INVOICEE_BIZ_TYPE VARCHAR(100) COMMENT '공급받는자 업태',
+//    INVOICEE_BIZ_CLASS VARCHAR(100) COMMENT '공급받는자 종목',
+//    INVOICEE_CONTACT_NAME1 VARCHAR(100) COMMENT '공급받는자 담당자 성명',
+//    INVOICEE_DEPT_NAME1 VARCHAR(100) COMMENT '공급받는자 담당자 부서명',
+//    INVOICEE_TEL1 VARCHAR(20) COMMENT '공급받는자 담당자 연락처',
+//    INVOICEE_HP1 VARCHAR(20) COMMENT '공급받는자 담당자 휴대폰',
+//    INVOICEE_EMAIL1 VARCHAR(100) COMMENT '공급받는자 담당자 이메일',
+//    INVOICEE_SMS_SEND_YN BOOLEAN COMMENT '공급받는자 알림문자 전송 여부',
+//    TRUSTEE_MGT_KEY VARCHAR(24) COMMENT '수탁자 문서번호',
+//    TRUSTEE_CORP_NUM VARCHAR(10) COMMENT '수탁자 사업자번호',
+//    TRUSTEE_TAX_REG_ID VARCHAR(4) COMMENT '수탁자 종사업장 식별번호',
+//    TRUSTEE_CORP_NAME VARCHAR(200) COMMENT '수탁자 상호',
+//    TRUSTEE_CEO_NAME VARCHAR(100) COMMENT '수탁자 대표자 성명',
+//    TRUSTEE_ADDR VARCHAR(300) COMMENT '수탁자 주소',
+//    TRUSTEE_BIZ_TYPE VARCHAR(100) COMMENT '수탁자 업태',
+//    TRUSTEE_BIZ_CLASS VARCHAR(100) COMMENT '수탁자 종목',
+//    TRUSTEE_CONTACT_NAME VARCHAR(100) COMMENT '수탁자 담당자 성명',
+//    TRUSTEE_DEPT_NAME VARCHAR(100) COMMENT '수탁자 담당자 부서명',
+//    TRUSTEE_TEL VARCHAR(20) COMMENT '수탁자 담당자 연락처',
+//    TRUSTEE_HP VARCHAR(20) COMMENT '수탁자 담당자 휴대폰',
+//    TRUSTEE_EMAIL VARCHAR(100) COMMENT '수탁자 담당자 이메일',
+//    TRUSTEE_SMS_SEND_YN BOOLEAN COMMENT '수탁자 알림문자 전송 여부',
+//    MODIFY_CODE INT COMMENT '수정 사유코드',
+//    ORG_NTS_CONFIRM_NUM VARCHAR(24) COMMENT '원본 세금계산서 국세청 승인번호',
+//    BUSINESS_LICENSE_YN BOOLEAN COMMENT '팝빌에 등록된 사업자등록증 첨부 여부',
+//    BANK_BOOK_YN BOOLEAN COMMENT '팝빌에 등록된 통장사본 첨부 여부',
+//    DEAL_INVOICE_KEY VARCHAR(24) COMMENT '거래명세서 문서번호'
+//    CODE INT COMMENT '응답코드',
+//    MESSAGE VARCHAR(300) COMMENT '응답메시지',
+//    NTS_CONFIRM_NUM VARCHAR(24) COMMENT '국세청 승인번호'
+//);
+
+

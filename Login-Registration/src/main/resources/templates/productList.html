@@ -39,6 +39,9 @@
 
         <td><button type="button" th:onclick="delete([[${product.id}]])">삭제</button></td>
         <td><button type="button" th:onclick="order([[${product.id}]])">구매</button></td>
+
+<!--        <td th:text="${prchs.userNm} + (${prchs.entNm} ? ' ' + ${prchs.entNm} : '') + ${prchs.ctrtUserCnt}">홍길동</td>-->
+
     </tr>
     </tbody>
 </table>
@@ -50,6 +53,403 @@
         var redirectUrl = '/products/' + productId + '/edit';
         window.location.href = redirectUrl;
     }
+
+
+
+
+
+    let prchsInfo = function(merchantData) {
+    var url = "/epay/prchs/info";
+    let param = {};
+    param['merchantData'] = merchantData;
+
+    $.ajax({
+        type: 'POST',
+        url: url,
+        contentType: 'application/json',
+        async: true,
+        data: JSON.stringify(param),
+        success: function(data){
+            var gdsNm = "";
+            var gdsSn = "";
+            var gdsVer = "";
+            var gdsSeCd = "";
+            var userId = "";
+            var ptnrId = "";
+            var msg = "";
+
+            var totalDataLength = data.length; // 데이터의 총 길이 저장
+            var processedDataCount = 0; // 처리된 데이터 수 저장
+
+            for (var i = 0; i < data.length; i++) {
+                gdsSn = data[i].gdsSn;
+                gdsVer = data[i].gdsVer;
+                gdsSeCd = data[i].gdsSeCd;
+                ptnrId = data[i].ptnrId;
+                msg = data[i].gdsNm + " 구매가 완료 되었습니다.";
+                userId = data[i].userId;
+
+                chatCheck(gdsSn, gdsVer, gdsSeCd, ptnrId, msg, userId, function(result, err) {
+                    processedDataCount++; // 각 데이터 처리 시 처리된 데이터 수 증가
+                    if (err) {
+                        console.log("result prchs info err : " + err);
+                    } else {
+                        console.log("result prchs info : "  + result);
+                    }
+
+                    // 모든 데이터를 처리했을 때만 이동
+                    if (processedDataCount === totalDataLength) {
+                        redirectToPage(); // 모든 데이터를 처리한 후 페이지 이동 함수 호출
+                    }
+                });
+            }
+        },
+        error: function(err){
+            console.log(err);
+        }
+    });
+}
+
+// 페이지 이동 함수
+function redirectToPage() {
+    console.log("All data processed, redirecting...");
+    window.location.href = "/mypage/prchsList?menuNo=48";
+}
+
+
+
+
+
+
+
+
+
+
+
+
+let prchsInfo = function(merchantData) {
+    var url = "/epay/prchs/info";
+    let param = {};
+    param['merchantData'] = merchantData;
+
+    $.ajax({
+        type: 'POST',
+        url: url,
+        contentType: 'application/json',
+        async: true,
+        data: JSON.stringify(param),
+        success: function(data) {
+            var totalDataLength = data.length;
+            var processedDataCount = 0;
+
+            for (var i = 0; i < data.length; i++) {
+                var gdsSn = data[i].gdsSn;
+                var gdsVer = data[i].gdsVer;
+                var gdsSeCd = data[i].gdsSeCd;
+                var ptnrId = data[i].ptnrId;
+                var msg = data[i].gdsNm + " 구매가 완료 되었습니다.";
+                var userId = data[i].userId;
+
+                chatCheck(gdsSn, gdsVer, gdsSeCd, ptnrId, msg, userId)
+                    .then(result => {
+                        console.log("result prchs info : " + result);
+                    })
+                    .catch(err => {
+                        console.log("result prchs info err : " + err);
+                    })
+                    .finally(() => {
+                        processedDataCount++;
+                        if (processedDataCount === totalDataLength) {
+                            redirectToPage();
+                        }
+                    });
+            }
+        },
+        error: function(err) {
+            console.log(err);
+        }
+    });
+}
+
+
+SELECT CONCAT(SUBSTRING(business_registration_number, 1, 3), '-', SUBSTRING(business_registration_number, 4, 2), '-', SUBSTRING(business_registration_number, 6, 5)) AS formatted_business_registration_number FROM your_table;
+SELECT CONCAT(SUBSTRING(phone_number, 1, 3), '-', SUBSTRING(phone_number, 4, 4), '-', SUBSTRING(phone_number, 8, 4)) AS formatted_phone_number FROM your_table;
+
+
+
+
+SELECT
+    PI.PRCHS_SN,
+    PI.GDS_SN,
+    PI.GDS_VER,
+    CASE PI.PRCHS_SE_CD
+        WHEN 'A' THEN '분석가공서비스'
+        WHEN 'AD' THEN '광고배너'
+        WHEN 'C' THEN '전자계약'
+        WHEN 'H' THEN '데이터허브'
+        WHEN 'M' THEN '마켓'
+        WHEN 'MS' THEN '멤버쉽'
+        WHEN 'RA' THEN '원격분석서비스'
+    END AS PRCHS_SE_CD,    /*상품구분*/
+    CASE GI.GDS_SE_CD
+        WHEN 'GENERAL' THEN '일반데이터'
+        WHEN 'CUSTOM' THEN '맞춤형데이터'
+        WHEN 'CHOICE' THEN '선택구매형데이터'
+        WHEN 'SUBSCRIBE' THEN '구독형데이터'
+        WHEN 'ANALYST' THEN '분석/가공서비스'
+        WHEN 'RMTANLY' THEN '원격분석전용'
+        WHEN 'REPORT' THEN '보고서데이터'
+    END AS GDS_SE_CD_KR,    /*서비스구분*/
+    GI.GDS_SE_CD,
+    PI.GDS_NM,            /*거래건명*/
+    EI2.ENT_NM AS PI_ENT_NM,    /*거래처명 - 구매회사명*/
+    U2.USER_NM AS PI_USER_NM,    /*구매담당자 - 구매자명*/
+    PI.RGTR_ID,            /*구매담당자ID - 구매자아이디*/
+    CONCAT(SUBSTRING(EI2.BZMN_REGNO, 1, 3), '-', SUBSTRING(EI2.BZMN_REGNO, 4, 2), '-', SUBSTRING(EI2.BZMN_REGNO, 6, 5)) AS PI_BZMN_REGNO,    /*사업자등록번호 - 구매회사 사업자등록번호*/
+    PI.AMT,                /*결제금액*/
+    DATE_FORMAT(COALESCE(SI.BILL_DT, PI.SEP_STLM_CMPT_DT, PI.REG_DT, PI.MDFCN_DT),'%Y-%M-%D') AS BILL_DT,    /*결제일자*/
+    CASE
+        WHEN PI.STLM_SN IS NOT NULL AND PI.STLM_SN != '' THEN
+            CASE SI.PAY_METHOD
+                WHEN 'CARD' THEN 'PG(신용카드)'
+                WHEN 'VCARD' THEN 'PG(신용카드)'
+                WHEN 'VBANK' THEN 'PG(무통장입금)'
+                WHEN 'DIRECTBANK' THEN 'PG(계좌이체)'
+            END
+        ELSE '직접입금'
+    END AS PAY_TYPE,    /*결제방법*/
+    (SELECT MDFCN_DT FROM FINDX_REAL.TAX_INVOICE_INFO WHERE PRCHS_SN = PI.PRCHS_SN ORDER BY TAX_INVOICE_SN DESC LIMIT 1) AS TAX_CONFIRM_DT,    /*세금계산서작성일자*/
+    EI.ENT_NM AS GI_ENT_NM,        /*의뢰업체(판매자) - 판매회사명*/
+    EI.RPRSV_NM,                /*의뢰업체(대표자) - 판매회사대표자명*/
+    U.USER_NM AS GI_USER_NM,    /*의뢰업체(담당자) - 판매자명*/
+    CONCAT(SUBSTRING(EI.BZMN_REGNO, 1, 3), '-', SUBSTRING(EI.BZMN_REGNO, 4, 2), '-', SUBSTRING(EI.BZMN_REGNO, 6, 5)) AS GI_BZMN_REGNO,        /*의뢰업체(사업자번호) - 판매회사 사업자등록번호*/
+    GI.RGTR_ID,                    /*의뢰업체(담당자) - 판매자아이디*/
+    EI.BZMN_TELNO,                /*의뢰업체(전화번호) - 판매회사 전화번호*/
+    EI.BZMN_EMAIL,                /*의뢰업체(이메일주소) - 판매회사 이메일주소*/
+    CASE CI.CHRG_CD
+        WHEN 'PRICEPAY' THEN
+            CASE
+                WHEN CI.LIMIT_CHRG IS NOT NULL THEN LEAST((SELECT (SUM(AMT) * CI.CHRG / 100) FROM FINDX_REAL.CTRT_CLCLN_MBR_INFO WHERE PI.CTRT_SN = CTRT_SN AND CLCLN_SE_CD = 'STLM'), CI.LIMIT_CHRG)
+                ELSE (SELECT (SUM(AMT) * CI.CHRG / 100) FROM FINDX_REAL.CTRT_CLCLN_MBR_INFO WHERE PI.CTRT_SN = CTRT_SN AND CLCLN_SE_CD = 'STLM')
+            END
+        WHEN 'USEFEE' THEN
+            CASE
+                WHEN CI.LIMIT_CHRG IS NOT NULL THEN LEAST((SELECT COUNT(USER_ID) AS CNT FROM FINDX_REAL.CTRT_TRGT_MBR_INFO WHERE PI.CTRT_SN = CTRT_SN) * CI.CHRG, CI.LIMIT_CHRG)
+                ELSE (SELECT COUNT(USER_ID) AS CNT FROM FINDX_REAL.CTRT_TRGT_MBR_INFO WHERE PI.CTRT_SN = CTRT_SN) * CI.CHRG
+            END
+        WHEN '%' THEN
+            CASE
+                WHEN CI.LIMIT_CHRG IS NOT NULL THEN LEAST((PI.AMT * CI.CHRG / 100), CI.LIMIT_CHRG)
+                ELSE (PI.AMT * CI.CHRG / 100)
+            END
+    END AS AMT_FEE
+FROM FINDX_REAL.PRCHS_INFO PI
+LEFT JOIN FINDX_REAL.STLM_INFO SI ON SI.STLM_SN = PI.STLM_SN
+LEFT JOIN FINDX_REAL.GDS_INFO GI ON PI.GDS_SN = GI.GDS_SN AND PI.GDS_VER = GI.GDS_VER
+LEFT JOIN FINDX_REAL.USER U ON GI.RGTR_ID = U.USER_ID    /*판매자*/
+LEFT JOIN FINDX_REAL.ENT_USER_INFO EUI ON U.USER_SE_CD = 'CRPRT' AND U.USER_ID = EUI.USER_ID
+LEFT JOIN FINDX_REAL.ENT_INFO EI ON EUI.ENT_SN = EI.ENT_SN AND EI.ENT_VER = (SELECT MAX(ENT_VER) FROM FINDX_REAL.ENT_INFO WHERE ENT_SN = EUI.ENT_SN AND ENT_STTS_CD ='A')
+LEFT JOIN FINDX_REAL.MEMBERSHIP_INFO MI ON EI.ENT_SN = MI.ENT_SN
+LEFT JOIN FINDX_REAL.CTRT_CLCLN_INFO CCI ON PI.CTRT_SN = CCI.CTRT_SN
+LEFT JOIN FINDX_REAL.USER U2 ON PI.RGTR_ID = U2.USER_ID    /*구매자*/
+LEFT JOIN FINDX_REAL.ENT_USER_INFO EUI2 ON U2.USER_SE_CD = 'CRPRT' AND U2.USER_ID = EUI2.USER_ID
+LEFT JOIN FINDX_REAL.ENT_INFO EI2 ON EUI2.ENT_SN = EI2.ENT_SN AND EI2.ENT_VER = (SELECT MAX(ENT_VER) FROM FINDX_REAL.ENT_INFO WHERE ENT_SN = EUI2.ENT_SN AND ENT_STTS_CD ='A')
+LEFT JOIN FINDX_REAL.CHRG_INFO CI ON
+    PI.PRCHS_SE_CD = CI.CHRG_GRP_CD
+    AND
+        CASE
+            WHEN CI.TARGET_CD = 'PM' THEN MI.MEMBERSHIP_SE_CD = 'P'
+            WHEN CI.TARGET_CD = 'NM' THEN MI.MEMBERSHIP_SE_CD = 'N'
+            WHEN CI.TARGET_CD = 'N' THEN MI.MEMBERSHIP_SE_CD IS NULL
+        END
+    AND
+        CASE
+            WHEN PI.PRCHS_SE_CD != 'C' AND GI.GDS_SE_CD = 'CHOICE' THEN
+                CI.MIN_CHRG_AMT IS NULL AND CI.MAX_CHRG_AMT IS NULL
+            WHEN PI.PRCHS_SE_CD != 'C' AND (GI.GDS_SE_CD IS NULL OR GI.GDS_SE_CD != 'CHOICE')
+                AND (CI.MIN_CHRG_AMT IS NOT NULL AND CI.MAX_CHRG_AMT IS NOT NULL) THEN
+                PI.AMT > CI.MIN_CHRG_AMT AND CI.MAX_CHRG_AMT >= PI.AMT
+            WHEN PI.PRCHS_SE_CD != 'C' AND (GI.GDS_SE_CD IS NULL OR GI.GDS_SE_CD != 'CHOICE')
+                AND (CI.MIN_CHRG_AMT IS NOT NULL AND CI.MAX_CHRG_AMT IS NULL) THEN
+                PI.AMT > CI.MIN_CHRG_AMT
+            WHEN PI.PRCHS_SE_CD != 'C' AND (GI.GDS_SE_CD IS NULL OR GI.GDS_SE_CD != 'CHOICE')
+                AND (CI.MIN_CHRG_AMT IS NULL AND CI.MAX_CHRG_AMT IS NOT NULL) THEN
+                CI.MAX_CHRG_AMT >= PI.AMT
+            WHEN PI.PRCHS_SE_CD = 'C' AND CCI.FEE_CLCLN_SE_CD = '2' THEN CI.CHRG_CD = 'PRICEPAY'
+            WHEN PI.PRCHS_SE_CD = 'C' AND CCI.FEE_CLCLN_SE_CD = '0' THEN CI.CHRG_CD = 'USEFEE'
+        END
+
+WHERE 1 = 1
+    AND PI.PRCHS_STTS_CD IN ('C', 'PC')
+    AND COALESCE(SI.BILL_DT, PI.SEP_STLM_CMPT_DT, PI.MDFCN_DT, PI.REG_DT) BETWEEN COALESCE(#{srchDateStr}, DATE_FORMAT(NOW(), '%Y-%m-01')) AND COALESCE(#{srchDateEnd}, CURDATE())
+ORDER BY COALESCE(SI.BILL_DT, PI.SEP_STLM_CMPT_DT, PI.MDFCN_DT, PI.REG_DT) DESC
+
+
+
+
+
+<!-- gds_action_log_mapper.xml -->
+<mapper namespace="com.example.mapper.GdsActionLogMapper">
+    <insert id="saveOrUpdate" parameterType="com.example.dto.GdsActionLogDTO">
+        INSERT INTO gds_action_log (action_dt, gds_sn, gds_ver, prchs_cnt)
+        VALUES (#{actionDt}, #{gdsSn}, #{gdsVer}, 1)
+        ON DUPLICATE KEY UPDATE prchs_cnt = prchs_cnt + 1
+    </insert>
+</mapper>
+
+
+            <if test="srchDateStr != null and srchDateStr != ''">    <!--시작일-->
+                AND DATE(PI.PRCHS_DT) >= #{srchDateStr}
+            </if>
+            <if test="srchDateEnd != null and srchDateEnd != ''">    <!--종료일-->
+                AND #{srchDateEnd} >= DATE(PI.PRCHS_DT)
+            </if>
+
+
+// 페이지 이동 함수
+function redirectToPage() {
+    console.log("All data processed, redirecting...");
+    window.location.href = "/mypage/prchsList?menuNo=48";
+}
+
+// chatCheck 함수가 Promise를 반환하도록 수정
+function chatCheck(gdsSn, gdsVer, gdsSeCd, ptnrId, msg, userId) {
+    var url = "/ntslclclnmng/chat/check";
+    let param = {
+        'gdsSn': gdsSn,
+        'gdsVer': gdsVer,
+        'gdsSeCd': gdsSeCd,
+        'ptnrId': ptnrId,
+        'memberId': userId
+    };
+
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: 'POST',
+            url: url,
+            contentType: 'application/json',
+            async: true,
+            data: JSON.stringify(param),
+            success: function(data) {
+                var chatSn = data.chatSn;
+                sendChatMsg(userId, ptnrId, chatSn, msg)
+                    .then(result => resolve(result))
+                    .catch(err => reject(err));
+            },
+            error: function(err) {
+                reject(err);
+            }
+        });
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+    // 프로미스를 반환하는 prchsInfo 함수
+function prchsInfo(merchantData) {
+    var url = "/epay/prchs/info";
+    let param = {};
+    param['merchantData'] = merchantData;
+
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: 'POST',
+            url: url,
+            contentType: 'application/json',
+            async: true,
+            data: JSON.stringify(param),
+            success: function(data){
+                // 배열의 각 항목에 대한 프로미스 배열 생성
+                const promises = data.map(item => chatCheck(item));
+
+                // 모든 프로미스가 완료되면 해결(resolve)
+                Promise.all(promises)
+                    .then(() => resolve())
+                    .catch(error => reject(error));
+            },
+            error: function(err){
+                reject(err);
+            }
+        });
+    });
+}
+
+// 프로미스를 반환하는 chatCheck 함수
+function chatCheck(item) {
+    var url = "/ntslclclnmng/chat/check";
+    let param = {
+        'gdsSn': item.gdsSn,
+        'gdsVer': item.gdsVer,
+        'gdsSeCd': item.gdsSeCd,
+        'ptnrId': item.ptnrId,
+        'memberId': item.userId
+    };
+
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: 'POST',
+            url: url,
+            contentType: 'application/json',
+            async: true,
+            data: JSON.stringify(param),
+            success: function(data){
+                var chatSn = data.chatSn;
+                sendChatMsg(item.userId, item.ptnrId, chatSn, item.msg)
+                    .then(() => resolve())
+                    .catch(error => reject(error));
+            },
+            error: function(err){
+                reject(err);
+            }
+        });
+    });
+}
+
+// 프로미스를 반환하는 sendChatMsg 함수
+function sendChatMsg(userId, ptnrId, chatSn, msg) {
+    var url = "/chat/writeMessages";
+
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "post",
+            url: url,
+            dataType: "json",
+            data: {
+                'userId': userId,
+                'ptnrId': ptnrId,
+                'chatSn': chatSn,
+                'msg': msg
+            },
+            success: function(data){
+                resolve(data.resultMsg);
+            },
+            error: function(err){
+                reject(err);
+            }
+        });
+    });
+}
+
+// prchsInfo 함수 호출 및 페이지 이동
+prchsInfo(merchantData)
+    .then(() => {
+        console.log("All data processed, redirecting...");
+        window.location.href = "/mypage/prchsList?menuNo=48";
+    })
+    .catch(error => {
+        console.error("An error occurred:", error);
+    });
+
+
 </script>
 
 
